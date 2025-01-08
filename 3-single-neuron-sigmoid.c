@@ -39,16 +39,30 @@ typedef struct test_data {
 
 int n_test = 4;
 int n_train = 4;
-int n_epoch = 1000;
+int n_epoch = 10000;
 float acceptable_error = 1e-3;
 float eps = 1e-1;
-float learning_rate = 10;
+float learning_rate = 1;
 
 training_data_t training_data_or_gate[] = {
   {0, 0, 0},
   {0, 1, 1},
   {1, 0, 1},
   {1, 1, 1}
+};
+
+training_data_t training_data_and_gate[] = {
+  {0, 0, 0},
+  {0, 1, 0},
+  {1, 0, 0},
+  {1, 1, 1}
+};
+
+training_data_t training_data_nor_gate[] = {
+  {0, 0, 1},
+  {0, 1, 0},
+  {1, 0, 0},
+  {1, 1, 0}
 };
 
 test_data_t test_data_common[] = {
@@ -66,7 +80,10 @@ void train(model_t *, training_data_t *);
 float sigmoid(float);
 
 int main() {
-  training_data_t *training_data = training_data_or_gate;
+  //training_data_t *training_data = training_data_or_gate;
+  //training_data_t *training_data = training_data_and_gate;
+  training_data_t *training_data = training_data_nor_gate;
+
   test_data_t *test_data = test_data_common;
   model_t *model = &model_init;
 
