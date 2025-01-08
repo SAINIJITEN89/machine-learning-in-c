@@ -40,8 +40,9 @@ typedef struct test_data {
 int n_test = 4;
 int n_train = 4;
 int n_epoch = 1000;
-float eps = 0.01;
-float acceptable_error = 0.001;
+float acceptable_error = 1e-3;
+float eps = 1e-1;
+float learning_rate = 10;
 
 training_data_t training_data_or_gate[] = {
   {0, 0, 0},
@@ -131,28 +132,14 @@ void train(model_t *model, training_data_t *training_data) {
     if(cost_current < acceptable_error) {
       printf("target accuracy achieved after %d epochs\n", i);
       return;
-    } else {
-      printf("iter: %4d\t[cost: %1.4f]\t model param:\
-          {w1: %1.4f\tw2: %1.4f\tb: %1.4f}\n", i, cost_current, w1, w2, b);
-    }
+    } 
 
-    if (cost(w1+eps, w2, b, training_data) < cost_current) {
-      w1 += eps;
-    } else {
-      w1 -= eps;
-    }
+    printf("iter: %4d\t[cost: %1.4f]\t model param:\
+        {w1: %1.4f\tw2: %1.4f\tb: %1.4f}\n", i, cost_current, w1, w2, b);
 
-    if (cost(w1, w2+eps, b, training_data) < cost_current) {
-      w2 += eps;
-    } else {
-      w2 -= eps;
-    }
-
-    if (cost(w1, w2, b+eps, training_data) < cost_current) {
-      b += eps;
-    } else {
-      b -= eps;
-    }
+    w1 -= ((cost(w1+eps, w2, b, training_data) - cost_current) / eps) * learning_rate;
+    w2 -= ((cost(w1, w2+eps, b, training_data) - cost_current) / eps) * learning_rate;
+    b -= ((cost(w1, w2, b+eps, training_data) - cost_current) / eps) * learning_rate;
 
     model->w1 = w1;
     model->w2 = w2;
