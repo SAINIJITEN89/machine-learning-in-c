@@ -1,14 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <stdbool.h>
 #include <time.h>
-
-//#define DEBUG
-#ifdef DEBUG
-#define dlog(...) printf(__VA_ARGS__)
-#else
-#define dlog(...) do {} while (0)
-#endif
 
 /*
  * function to model 
@@ -46,7 +38,7 @@ typedef struct test_data {
 
 int n_test = 4;
 int n_train = 4;
-int n_epoch = 1000;
+int n_epoch = 50;
 float eps = 0.01;
 float acceptable_error = 0.001;
 
@@ -71,12 +63,11 @@ void test(model_t *, test_data_t *);
 void train(model_t *, training_data_t *);
 
 int main() {
-  srand(time(NULL));
-
   training_data_t *training_data = training_data_or_gate;
   test_data_t *test_data = test_data_common;
   model_t *model = &model_init;
 
+  srand(time(NULL));
   model->w1 = (float)rand() / RAND_MAX;
   model->w2 = (float)rand() / RAND_MAX;
   model->b = (float)rand() / RAND_MAX;
@@ -134,16 +125,9 @@ void train(model_t *model, training_data_t *training_data) {
       printf("target accuracy achieved after %d epochs\n", i);
       return;
     } else {
-      printf("epoch: %4d\tcost: %1.4f\n", i, cost_current);
+      printf("iter: %4d\t[cost: %1.4f]\t model param:\
+          {w1: %1.4f\tw2: %1.4f\tb: %1.4f}\n", i, cost_current, w1, w2, b);
     }
-
-    dlog("cost - baseline: %1.4f\n", cost(w1, w2, b, training_data));
-    dlog("cost - w1 + eps: %1.4f\n", cost(w1+eps, w2, b, training_data));
-    dlog("cost - w1 - eps: %1.4f\n", cost(w1-eps, w2, b, training_data));
-    dlog("cost - w2 + eps: %1.4f\n", cost(w1, w2+eps, b, training_data));
-    dlog("cost - w2 - eps: %1.4f\n", cost(w1, w2-eps, b, training_data));
-    dlog("cost - b + eps: %1.4f\n", cost(w1, w2, b+eps, training_data));
-    dlog("cost - b - eps: %1.4f\n", cost(w1, w2, b-eps, training_data));
 
     if (cost(w1+eps, w2, b, training_data) < cost_current) {
       w1 += eps;
@@ -166,8 +150,6 @@ void train(model_t *model, training_data_t *training_data) {
     model->w1 = w1;
     model->w2 = w2;
     model->b = b;
-
-    printf("w1: %1.4f\tw2: %1.4f\tb: %1.4f\n", w1, w2, b);
   }
   return;
 }
