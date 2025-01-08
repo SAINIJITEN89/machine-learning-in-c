@@ -1,1 +1,1 @@
-# machine_learning
+# machine learning fundamentals implemented from scratch using C programming language
