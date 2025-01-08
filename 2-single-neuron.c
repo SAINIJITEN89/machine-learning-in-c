@@ -1,6 +1,7 @@
+#include <stdlib.h>
 #include <stdio.h>
-#include <math.h>
 #include <stdbool.h>
+#include <time.h>
 
 //#define DEBUG
 #ifdef DEBUG
@@ -45,7 +46,7 @@ typedef struct test_data {
 
 int n_test = 4;
 int n_train = 4;
-int n_epoch = 100;
+int n_epoch = 1000;
 float eps = 0.01;
 float acceptable_error = 0.001;
 
@@ -70,9 +71,15 @@ void test(model_t *, test_data_t *);
 void train(model_t *, training_data_t *);
 
 int main() {
+  srand(time(NULL));
+
   training_data_t *training_data = training_data_or_gate;
   test_data_t *test_data = test_data_common;
   model_t *model = &model_init;
+
+  model->w1 = (float)rand() / RAND_MAX;
+  model->w2 = (float)rand() / RAND_MAX;
+  model->b = (float)rand() / RAND_MAX;
 
   printf("test before training\n");
   test(model, test_data);
@@ -138,23 +145,29 @@ void train(model_t *model, training_data_t *training_data) {
     dlog("cost - b + eps: %1.4f\n", cost(w1, w2, b+eps, training_data));
     dlog("cost - b - eps: %1.4f\n", cost(w1, w2, b-eps, training_data));
 
-    if (cost(w1+eps, w2, b, training_data) < cost(w1, w2, b, training_data)) {
-      model->w1 += eps;
+    if (cost(w1+eps, w2, b, training_data) < cost_current) {
+      w1 += eps;
     } else {
-      model->w1 -= eps;
+      w1 -= eps;
     }
 
-    if (cost(w1, w2+eps, b, training_data) < cost(w1, w2, b, training_data)) {
-      model->w2 += eps;
+    if (cost(w1, w2+eps, b, training_data) < cost_current) {
+      w2 += eps;
     } else {
-      model->w2 -= eps;
+      w2 -= eps;
     }
 
-    if (cost(w1, w2, b+eps, training_data) < cost(w1, w2, b, training_data)) {
-      model->b += eps;
+    if (cost(w1, w2, b+eps, training_data) < cost_current) {
+      b += eps;
     } else {
-      model->b -= eps;
+      b -= eps;
     }
+
+    model->w1 = w1;
+    model->w2 = w2;
+    model->b = b;
+
+    printf("w1: %1.4f\tw2: %1.4f\tb: %1.4f\n", w1, w2, b);
   }
   return;
 }
