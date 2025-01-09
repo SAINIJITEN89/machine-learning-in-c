@@ -24,10 +24,10 @@ typedef struct model {
 
 int n_test = 4;
 int n_train = 4;
-int n_epoch = 10000;
+int n_epoch = 100000000;
 float acceptable_error = 1e-3;
-float eps = 1e-1;
-float learning_rate = 1;
+float eps = 1e-2;
+float learning_rate = 1e-1;
 
 training_data_t training_data_or_gate[] = {
   {0, 0, 0},
@@ -126,7 +126,7 @@ float predict_one(model_t *model, float x1, float x2) {
   y_predict_n2 = sigmoid(x1*model->weights[1][0] +
       x2*model->weights[1][1] +
       model->biases[1]);
-  y_predict_n2 = sigmoid(y_predict_n1*model->weights[2][0] +
+  y_predict_n3 = sigmoid(y_predict_n1*model->weights[2][0] +
       y_predict_n2*model->weights[2][1] +
       model->biases[2]);
 
@@ -178,8 +178,10 @@ void train(model_t *model, training_data_t *training_data) {
       printf("target accuracy achieved after %d epochs\n", i);
       return;
     } 
-
-    printf("iter: %4d\t[cost: %1.4f]\n", i, cost_current);
+    
+    if(!(i%1000)) {
+      printf("iter: %4d\t[cost: %1.4f]\n", i, cost_current);
+    }
 
     /*
      * for each of the weights and biases, calculate cost after nudge 
